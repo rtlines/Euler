@@ -93,7 +93,9 @@ x[0]=x0                        # initial x position
 y[0]=y0                        # initial y positoin
 vx[0]=vx1                      # initial x velocity
 vy[0]=vy1            # initial y velocity, what we give it
+
                                # plus the expansion sudo velocity
+print('working')
 for i in range (0,N-1):
     r=np.sqrt(x[i]**2+y[i]**2)
     if x[i] != 0:
@@ -125,7 +127,7 @@ for i in range (0,N-1):
                                             # expansion term
     #print(i, theta, x[i],y[i],vx[i],vy[i], gx, gy)
 
-
+print('done')
 plt.plot(x,y)
 #xEu=np.copy(x)
 #yEu=np.copy(y)
