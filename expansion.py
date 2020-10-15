@@ -26,7 +26,7 @@ G=5.11E-11    # N*m**2/kg**2
 x0=2*R          # initial x position in m
 y0=0.5*R       # initial y position in m
 v0=6000.0         # initial velocity in m/s
-thetadeg=100   # launch angle in degrees
+thetadeg=30   # launch angle in degrees
 Rexp=0.007      # expansion coefficient in m/s/m This is really 
               # a type of Hubble constant, but I am not using
               # the right value yet.
@@ -34,7 +34,7 @@ Rexp=0.007      # expansion coefficient in m/s/m This is really
 ## Set up the time steps and number of calcualtions
 deltat=1.0        # Time steps of 0.01 seconds
 ti=0              # starting at t=0
-tf=200000          # final time
+tf=20000          # final time
 N=int((tf-ti)/deltat)  # calcualte how many time steps are in 20 seconds
 ##############################################################
 # Preliminary calculations
@@ -94,6 +94,8 @@ y[0]=y0                        # initial y positoin
 vx[0]=vx1                      # initial x velocity
 vy[0]=vy1            # initial y velocity, what we give it
                                # plus the expansion sudo velocity
+
+print('working')
 for i in range (0,N-1):
     r=np.sqrt(x[i]**2+y[i]**2)
     if x[i] != 0:
@@ -120,16 +122,13 @@ for i in range (0,N-1):
     
     x[i+1]=x[i]+deltat*fx
     y[i+1]=y[i]+deltat*fy
-    vx[i+1]=vx[i]+deltat*gx
-    vy[i+1]=vy[i]+deltat*gy    # once again I have added in the 
-                                            # expansion term
-    #print(i, theta, x[i],y[i],vx[i],vy[i], gx, gy)
+    vx[i+1]=vx[i]+deltat*gx+Rexp*r*np.cos(theta)
+    vy[i+1]=vy[i]+deltat*gy+Rexp*r*np.sin(theta)  # I have added in the 
+                                               # expansion term
+    print(i, theta, x[i],y[i],vx[i],vy[i], gx, gy)
 
-
+print('done')
 plt.plot(x,y)
-#xEu=np.copy(x)
-#yEu=np.copy(y)
-#plt.plot(xEu,yEu, label='expansion2')
 
 
 ###############################################################
