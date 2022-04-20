@@ -30,7 +30,7 @@ thetadeg=100   # Satellite launch angle in degrees
 ## Set up the time steps and number of calcualtions
 deltat=1.0        # Time steps of 0.01 seconds
 ti=0              # starting at t=0
-tf=300000         # final time in seconds
+tf=50000          # final time in seconds
 N=int((tf-ti)/deltat)  # calcualte how many time steps are in tf-ti seconds
 
 ##############################################################
@@ -69,7 +69,7 @@ for i in range (0,Ne):
     thetaE=thetaE+delta_ThetaE
     xe[i]=r*np.cos(thetaE*pi/180)
     ye[i]=r*np.sin(thetaE*pi/180)
-plt.plot(xe, ye)
+plt.plot(xe, ye,label='Earth')
 
 ##############################################################
 # now perform an Euler's Method Calculation
@@ -90,7 +90,7 @@ vx[0]=vx1                      # initial x velocity
 vy[0]=vy1                      # initial y velocity, what we give it
 
 # Now calculate all the other points of the satellite path
-print('working')
+print('working Euler')
 for i in range (0,N-1):
     r=np.sqrt(x[i]**2+y[i]**2)
     if x[i] != 0:
@@ -121,15 +121,23 @@ for i in range (0,N-1):
     vy[i+1]=vy[i]+deltat*gy   
 print('done')
 
+xe=np.copy(x)
+ye=np.copy(y)
 # Now plot our satellite path 
-plt.plot(x[:i],y[:i])
-plt.show()
+plt.plot(xe[:i],ye[:i],label='Euler')
 
-# And that is the end of the program
+
+
 
 ###############################################################
 ##now perform an RK2 Method Calculation
+x=np.zeros((N))
+y=np.zeros((N))
+vx=np.zeros((N))
+vy=np.zeros((N))
+
 # Put the starting point in the arrays
+print("working RK2")
 x[0]=x0                        # initial x position
 y[0]=y0                        # initial y positoin
 vx[0]=vx1                      # initial x velocity
@@ -167,24 +175,25 @@ for i in range (0,N-1):
     #now the RK step, 
     #thing as above to find the x abd y components of the velocity.
     
-    fx2=vx[i]+kvx1/2
-    gx2=-Rx/m
-    fy2=vy[i]+kvy1/2
-    gy2=-g-Ry/m
+    fx2=fx+kx1/2
+    fy2=fy+ky1/2
+    gx2=gx+kvx1/2
+    gy2=gy+kvy1/2
+    
     #finally take the RK step.
     x[i+1]=x[i]+deltat*fx2
     y[i+1]=y[i]+deltat*fy2
     vx[i+1]=vx[i]+deltat*gx2
-    vy[i+1]=vy[i]+deltat*gy2+Rexp*y[i]     # once again I have added in the 
-                                            # expansion term
+    vy[i+1]=vy[i]+deltat*gy2
     #if y(i+1)<=0.0 , break, end
-    
+print("done")
 xRK=np.copy(x)
 yRK=np.copy(y)
 
-plt.plot(xnd,ynd, label='kinematic')
-plt.plot(xEu,yEu, label='expansion')
-plt.plot(xRK,yRK,label='RK')
+
+
+plt.plot(xRK[:i],yRK[:i],label='RK')
 plt.xlabel('x [m]')
 plt.ylabel('y [m]')
 leg=plt.legend();
+plt.show()
