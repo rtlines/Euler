@@ -25,7 +25,7 @@ m=0.020       # mass of sattelite in kilograms
 G=5.11E-11    # N*m**2/kg**2
 x0=2*R          # initial x position in m
 y0=0.5*R       # initial y position in m
-v0=6500.0         # initial velocity in m/s
+v0=6000.0         # initial velocity in m/s
 thetadeg=100   # launch angle in degrees
 Rexp=0.007      # expansion coefficient in m/s/m This is really 
               # a type of Hubble constant, but I am not using
@@ -34,7 +34,7 @@ Rexp=0.007      # expansion coefficient in m/s/m This is really
 ## Set up the time steps and number of calcualtions
 deltat=1.0        # Time steps of 0.01 seconds
 ti=0              # starting at t=0
-tf=300000         # final time
+tf=400000          # final time
 N=int((tf-ti)/deltat)  # calcualte how many time steps are in 20 seconds
 ##############################################################
 # Preliminary calculations
@@ -98,96 +98,45 @@ vy[0]=vy1            # initial y velocity, what we give it
 print('working')
 for i in range (0,N-1):
     r=np.sqrt(x[i]**2+y[i]**2)
-    if x[i] != 0:
-        theta=np.arctan(y[i]/x[i])
-    else:
-        theta=pi/2
-        
-    if y[i]>0 and x[i]<0:
-       theta=pi+theta
-    if y[i]<0 and x[i]<=0:
-       theta=theta+pi
-    if y[i]<0 and x[i]>0:
-       theta=2*pi+theta
+  
     if r<R:
        print("hit surface")
        break   #hit surface
     
     fx=vx[i]
-    gx=-np.cos(theta) * G*M/r**2
-    
-    
+    gx=-G*M*x[i]/r**3
     fy=vy[i]
-    gy=-np.sin(theta) * G*M/r**2
+    gy=-G*M*y[i]/r**3
     
+    
+    v=np.sqrt(vx[i]**2+vy[i]**2)
+    
+    if (t[i]>50000) and (t[i]<50100):
+        tx=5.0*vx[i]/v
+        ty=5.0*vy[i]/v
+        ax=gx+tx
+        ay=gy+ty
+    else:
+        ax=gx
+        ay=gy
+        
     x[i+1]=x[i]+deltat*fx
     y[i+1]=y[i]+deltat*fy
-    vx[i+1]=vx[i]+deltat*gx
-    vy[i+1]=vy[i]+deltat*gy    # once again I have added in the 
-                                            # expansion term
-    #print(i, theta, x[i],y[i],vx[i],vy[i], gx, gy)
+    vx[i+1]=vx[i]+deltat*ax
+    vy[i+1]=vy[i]+deltat*ay    
+                                           
+    #print(i, theta, ax, ay, gx, gy)
 
 print('done')
 
 #plt.axes('square')
-#plt.plot(xe,ye)
+
+plt.plot(xe,ye)
+
 plt.plot(x,y)
 
 plt.show()
 
-#xEu=np.copy(x)
-#yEu=np.copy(y)
-#plt.plot(xEu,yEu, label='expansion2')
 
 
-###############################################################
-##now perform an RK2 Method Calculation
-#x[0]=x0                    # initial x position
-#y[0]=y0                    # initial y positoin
-#vx[0]=vx1                  # inintal x velocity
-#vy[0]=vy1+Rexp*y[0]        # initial y velocity, what we give it
-#                           # plus the expansion sudo velocity
-#for i in range (0,N-1):
-#    v=np.sqrt(vx[i]**2+vy[i]**2)
-#    # first the Euler step, This is tricky because I want just the x
-#    # component and the y component of the drag force, but the drag force
-#    # depends on v^2. Remembering that vx=v*cos(theta), we can then multiply
-#    # the speed, v, by vx to get v^2*cos(theta). This way we don't have to
-#    # calculate theta explicitly
-#    Rx=0.5*D*rho*pi*r*r*v*vx[i]
-#    Ry=0.5*D*rho*pi*r*r*v*vy[i]
-#    fx=vx[i]
-#    gx=-Rx/m
-#    fy=vy[i]
-#    gy=-g-Ry/m
-#    kx1=deltat*fx
-#    ky1=deltat*fy
-#    kvx1=deltat*gx
-#    kvy1=deltat*gy
-#    #now the RK step, What to do with the v^2? I think we can do the same
-#    #thing as above to find the x abd y components of the velocity.
-#    v=np.sqrt((vx[i]+kvx1/2)**2+(vy[i]+kvy1/2)**2)
-#    Rx2=0.5*D*rho*pi*r*r*v*(vx[i]+kvx1/2)
-#    Ry2=0.5*D*rho*pi*r*r*v*(vy[i]+kvy1/2)
-#    fx2=vx[i]+kvx1/2
-#    gx2=-Rx/m
-#    fy2=vy[i]+kvy1/2
-#    gy2=-g-Ry/m
-#    #finally take the RK step.
-#    x[i+1]=x[i]+deltat*fx2
-#    y[i+1]=y[i]+deltat*fy2
-#    vx[i+1]=vx[i]+deltat*gx2
-#    vy[i+1]=vy[i]+deltat*gy2+Rexp*y[i]     # once again I have added in the 
-#                                            # expansion term
-#    #if y(i+1)<=0.0 , break, end
-#    
-#xRK=np.copy(x)
-#yRK=np.copy(y)
-#
-#plt.plot(xnd,ynd, label='kinematic')
-#plt.plot(xEu,yEu, label='expansion')
-#plt.plot(xRK,yRK,label='RK')
-#plt.xlabel('x [m]')
-#plt.ylabel('y [m]')
-#leg=plt.legend();
-#plt.show()
+
